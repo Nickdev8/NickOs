@@ -8,6 +8,7 @@ uint16_t *vga_buffer = (uint16_t *)0xB8000;
 char input_buffer[MAX_INPUT];
 int input_pos = 0;
 int row = 0, col = 0;
+uint8_t current_color = 0x0F; // white on black
 
 const char *nick_banner =
     " _   _ _      _       ____   ____  \n"
@@ -15,12 +16,25 @@ const char *nick_banner =
     "|  \\| | |/ __| '_ \\  \\___ \\ | | | |\n"
     "| |\\  | | (__| | | |  ___) || |_| |\n"
     "|_| \\_|_|\\___|_| |_| |____(_)____/ \n";
+const char *ascii_cat =
+    " /\\_/\\\n"
+    "( o.o )\n"
+    " > ^ <\n";
+
+const char *ascii_rocket =
+    "   ^\n"
+    "  /^\\\n"
+    "  |#|\n"
+    " /###\\\n"
+    "|#####|\n"
+    " |###|\n"
+    "  |||\n";
 
 void clear_screen()
 {
     for (int i = 0; i < VGA_WIDTH * VGA_HEIGHT; i++)
     {
-        vga_buffer[i] = (uint8_t)' ' | (0x0F << 8);
+        vga_buffer[i] = (uint8_t)' ' | (current_color << 8);
     }
     col = 0;
     row = 0;
@@ -39,7 +53,7 @@ void scroll_up()
     // Clear last line
     for (int x = 0; x < VGA_WIDTH; x++)
     {
-        vga_buffer[(VGA_HEIGHT - 1) * VGA_WIDTH + x] = ' ' | (0x0F << 8);
+        vga_buffer[(VGA_HEIGHT - 1) * VGA_WIDTH + x] = ' ' | (current_color << 8);
     }
 
     row = VGA_HEIGHT - 1;
@@ -77,7 +91,8 @@ void print(const char *str)
         else
         {
             int index = row * VGA_WIDTH + col;
-            vga_buffer[index] = (uint8_t)*str | (0x0F << 8);
+            vga_buffer[index] = (uint8_t)*str | (current_color << 8);
+
             col++;
             if (col >= VGA_WIDTH)
             {
@@ -104,6 +119,15 @@ int strcmp(const char *a, const char *b)
     }
     return *a - *b;
 }
+int strncmp(const char *a, const char *b, int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        if (a[i] != b[i] || a[i] == '\0' || b[i] == '\0')
+            return a[i] - b[i];
+    }
+    return 0;
+}
 void backspace()
 {
     if (col == 0 && row == 0)
@@ -118,7 +142,8 @@ void backspace()
         col--;
     }
     int index = row * VGA_WIDTH + col;
-    vga_buffer[index] = ' ' | (0x0F << 8); // blank it
+    vga_buffer[index] = ' ' | (current_color << 8);
+
 }
 
 void execute_command(const char *cmd)
@@ -134,6 +159,34 @@ void execute_command(const char *cmd)
     else if (strcmp(cmd, "about") == 0)
     {
         print("NickOS - Tiny DIY Terminal\n");
+    }
+    else if (strncmp(cmd, "ascii ", 6) == 0)
+    {
+        const char *name = cmd + 6;
+        if (strcmp(name, "cat") == 0)
+            print(ascii_cat);
+        else if (strcmp(name, "rocket") == 0)
+            print(ascii_rocket);
+        else
+            print("Unknown ASCII art\n");
+    }
+    else if (strncmp(cmd, "theme ", 6) == 0)
+    {
+        const char *color = cmd + 6;
+        if (strcmp(color, "white") == 0)
+            current_color = 0x0F;
+        else if (strcmp(color, "red") == 0)
+            current_color = 0x0C;
+        else if (strcmp(color, "green") == 0)
+            current_color = 0x0A;
+        else if (strcmp(color, "blue") == 0)
+            current_color = 0x09;
+        else if (strcmp(color, "hacker") == 0)
+            current_color = 0x0A; // green on black
+        else
+            print("Unknown theme. Try white, red, green, blue, hacker\n");
+
+        print("> ");
     }
     else
     {
