@@ -85,3 +85,11 @@ void disable_cursor()
     outb(0x3D4, 0x0A);
     outb(0x3D5, 0x20);
 }
+void print_char_at(char c, int x, int y)
+{
+    if (x >= 0 && x < VGA_WIDTH && y >= 0 && y < VGA_HEIGHT)
+    {
+        int index = y * VGA_WIDTH + x;
+        vga_buffer[index] = (uint8_t)c | (current_color << 8);
+    }
+}

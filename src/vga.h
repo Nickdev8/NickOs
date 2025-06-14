@@ -13,3 +13,4 @@ void clear_screen();
 void scroll_up();
 void backspace();
 void disable_cursor();
+void print_char_at(char c, int x, int y);

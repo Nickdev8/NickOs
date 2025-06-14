@@ -4,10 +4,9 @@
 #include "ascii_art.h"
 
 void kernel_main() {
-    disable_cursor();         // Try commenting this out
-    // clear_screen();           // Try commenting this out
-    print("Boot test\n");        // Keep this
-    print(nick_banner);       // Maybe corrupt data?
+    disable_cursor();
+    clear_screen();
+    print(nick_banner);
     print("> ");
     while (1) {
         if (inb(0x64) & 1) {

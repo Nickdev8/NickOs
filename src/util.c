@@ -20,6 +20,18 @@ int strncmp(const char *a, const char *b, int n)
     }
     return 0;
 }
+int strlen(const char *str) {
+    int len = 0;
+    while (str[len]) len++;
+    return len;
+}
+
+void strcpy(char *dest, const char *src) {
+    while (*src) {
+        *dest++ = *src++;
+    }
+    *dest = '\0';
+}
 
 void outb(uint16_t port, uint8_t val)
 {
