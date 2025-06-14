@@ -19,7 +19,9 @@ iso/boot/grub/grub.cfg:
 	mkdir -p iso/boot/grub
 	echo 'menuentry "NickOS" { multiboot /boot/kernel.elf }' > $@
 
-$(ISO_NAME): $(KERNEL_ELF) iso/boot/grub/grub.cfg
+$(ISO_NAME): $(KERNEL_ELF)
+	mkdir -p iso/boot/grub
+	cp grub/grub.cfg iso/boot/grub/grub.cfg
 	cp $(KERNEL_ELF) iso/boot/kernel.elf
 	grub-mkrescue -o $@ iso
 

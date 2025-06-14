@@ -10,6 +10,16 @@ void clear_screen() {
     }
 }
 
+static inline void outb(uint16_t port, uint8_t val) {
+    __asm__ volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
+}
+
+void disable_cursor() {
+    outb(0x3D4, 0x0A);
+    outb(0x3D5, 0x20);
+}
+
+
 void print(const char* str) {
     static int row = 0, col = 0;
     while (*str) {
@@ -26,9 +36,8 @@ void print(const char* str) {
 }
 
 void kernel_main() {
+    disable_cursor();
     clear_screen();
     print("NickOS Terminal v0.0.1\n> ");
-    while (1) {
-        __asm__("hlt");
-    }
+    while (1) { __asm__("hlt"); }
 }
