@@ -10,7 +10,9 @@ extern int row, col;
 
 void print(const char *str);
 void clear_screen();
+void set_color(uint8_t color);
 void scroll_up();
 void backspace();
 void disable_cursor();
 void print_char_at(char c, int x, int y);
+void init_vga();

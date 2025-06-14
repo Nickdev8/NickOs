@@ -1,9 +1,16 @@
 #include "vga.h"
 #include "util.h"
 
-volatile uint16_t *vga_buffer = (uint16_t *)0xB8000;
-uint8_t current_color = 0x0F;
-int row = 0, col = 0;
+volatile uint16_t *vga_buffer;
+uint8_t current_color;
+int row, col;
+
+void init_vga() {
+    vga_buffer = (uint16_t *)0xB8000;
+    current_color = 0x0F;
+    row = 0;
+    col = 0;
+}
 
 void clear_screen()
 {
@@ -16,6 +23,10 @@ void clear_screen()
     }
     col = 0;
     row = 0;
+}
+
+void set_color(uint8_t color) {
+    current_color = color;
 }
 
 void scroll_up()

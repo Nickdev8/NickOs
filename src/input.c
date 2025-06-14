@@ -25,12 +25,16 @@ char scancode_to_ascii[128] = {
 
 void redraw_input()
 {
-    // clear current line
+    // move cursor to start
+    col = 0;
+
+    // clear the entire line
     for (int i = 0; i < VGA_WIDTH; i++)
     {
-        print_char_at(' ', col + i, row);
+        print_char_at(' ', i, row);
     }
 
+    // reprint prompt and buffer
     col = 0;
     print("> ");
     print(input_buffer);
@@ -38,19 +42,27 @@ void redraw_input()
 
 void add_to_history(const char *command)
 {
-    if (command[0] == '\0') return; // skip empty
-
-    if (history_count < HISTORY_SIZE) {
+    if (command[0] == '\0')
+        return;
+    if (history_count > 0)
+    {
+        if (strcmp(history[history_count - 1], command) == 0)
+            return;
+    }
+    if (history_count < HISTORY_SIZE)
+    {
         strcpy(history[history_count++], command);
-    } else {
-        for (int i = 1; i < HISTORY_SIZE; i++) {
+    }
+    else
+    {
+        for (int i = 1; i < HISTORY_SIZE; i++)
+        {
             strcpy(history[i - 1], history[i]);
         }
         strcpy(history[HISTORY_SIZE - 1], command);
     }
     history_index = history_count;
 }
-
 
 void handle_keypress()
 {
@@ -117,13 +129,15 @@ void handle_keypress()
         history_index = history_count;
         execute_command(input_buffer);
         input_pos = 0;
+        input_buffer[0] = '\0'; // reset safely
         print("> ");
         return;
     }
 
-    if (input_pos < MAX_INPUT - 1)
+    if (input_pos < MAX_INPUT - 2)
     {
         input_buffer[input_pos++] = key;
+        input_buffer[input_pos] = '\0'; // always keep it null-terminated
         char str[2] = {key, 0};
         print(str);
     }

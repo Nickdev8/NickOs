@@ -7,9 +7,6 @@ all: $(ISO_NAME)
 build:
 	mkdir -p build
 
-build/kernel.elf: $(OBJS)
-	x86_64-elf-ld -m elf_i386 -T link.ld -o $@ $(OBJS)
-
 build/boot.o: src/boot.asm | build
 	nasm -f elf32 $< -o $@
 
@@ -32,7 +29,9 @@ $(ISO_NAME): $(KERNEL_ELF) iso/boot/grub/grub.cfg
 	grub-mkrescue -o $@ iso
 
 run: $(ISO_NAME)
-	qemu-system-x86_64 -cdrom $<
+	qemu-system-x86_64 -cdrom NickOS.iso -display gtk -vga std
+
+
 
 clean:
 	rm -rf build iso $(ISO_NAME)

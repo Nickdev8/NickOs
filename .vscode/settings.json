@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "*.embeddedhtml": "html",
-        "ascii_art.h": "c"
+        "ascii_art.h": "c",
+        "util.h": "c",
+        "vga.h": "c"
     }
 }
