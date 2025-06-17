@@ -15,26 +15,22 @@ char input_buffer[MAX_INPUT];
 int input_pos = 0;
 
 char scancode_to_ascii[128] = {
-    0, 27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b', // Backspace
-    '\t', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',  // Enter
+    0, 27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',
+    '\t', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',
     0, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', 0,
     0, '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0, '*',
-    0, ' ', // Spacebar
-            // rest are unused
+    0, ' ',
 };
 
 void redraw_input()
 {
-    // move cursor to start
     col = 0;
 
-    // clear the entire line
     for (int i = 0; i < VGA_WIDTH; i++)
     {
         print_char_at(' ', i, row);
     }
 
-    // reprint prompt and buffer
     col = 0;
     print("> ");
     print(input_buffer);
@@ -69,14 +65,13 @@ void handle_keypress()
     uint8_t scancode = inb(0x60);
 
     if (scancode & 0x80)
-    {
-        // Key release — ignore
+    { // Key release 
         return;
     }
     if (scancode == 0x48)
     { // UP arrow
         if (history_count == 0)
-            return; // nothing to show
+            return; 
         if (history_index > 0)
         {
             history_index--;
@@ -89,7 +84,7 @@ void handle_keypress()
     else if (scancode == 0x50)
     { // DOWN arrow
         if (history_count == 0)
-            return; // nothing to do
+            return; 
 
         if (history_index < history_count - 1)
         {
@@ -98,7 +93,6 @@ void handle_keypress()
         }
         else
         {
-            // clear buffer and move to empty line
             history_index = history_count;
             input_buffer[0] = '\0';
         }
@@ -129,7 +123,7 @@ void handle_keypress()
         history_index = history_count;
         execute_command(input_buffer);
         input_pos = 0;
-        input_buffer[0] = '\0'; // reset safely
+        input_buffer[0] = '\0';
         print("> ");
         return;
     }
@@ -137,7 +131,7 @@ void handle_keypress()
     if (input_pos < MAX_INPUT - 2)
     {
         input_buffer[input_pos++] = key;
-        input_buffer[input_pos] = '\0'; // always keep it null-terminated
+        input_buffer[input_pos] = '\0';
         char str[2] = {key, 0};
         print(str);
     }

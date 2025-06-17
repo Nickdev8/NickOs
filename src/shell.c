@@ -16,7 +16,7 @@ void cmd_clear(const char *args) {
 
 void cmd_about(const char *args) {
     (void)args;
-    print("NickOS - Tiny DIY Terminal\n");
+    print("NickOS - Tiny DIY Terminal\nMade for HackClub Neighberhood");
 }
 
 void cmd_theme(const char *args) {
@@ -47,7 +47,6 @@ int command_count = sizeof(commands) / sizeof(Command);
 void execute_command(const char *input) {
     if (!input || input[0] == 0) return;
 
-    // Find the first space
     const char *space = input;
     while (*space && *space != ' ') {
         space++;
@@ -58,7 +57,6 @@ void execute_command(const char *input) {
     for (int i = 0; i < command_count; i++) {
         const char *cmd = commands[i].name;
 
-        // Compare only the name part
         int match = 1;
         for (int j = 0; j < name_len; j++) {
             if (cmd[j] != input[j]) {
@@ -67,13 +65,12 @@ void execute_command(const char *input) {
             }
         }
 
-        // Make sure the command name isn't longer
         if (match && cmd[name_len] != '\0') {
             match = 0;
         }
 
         if (match) {
-            while (*space == ' ') space++; // skip any extra spaces
+            while (*space == ' ') space++;
             commands[i].func(*space ? space : "");
             return;
         }
