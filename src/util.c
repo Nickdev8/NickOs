@@ -1,5 +1,6 @@
 #include "vga.h"
 #include "util.h"
+#include <stddef.h>
 
 
 int strcmp(const char *a, const char *b)
@@ -43,4 +44,21 @@ uint8_t inb(uint16_t port)
     uint8_t ret;
     __asm__ volatile("inb %1, %0" : "=a"(ret) : "Nd"(port));
     return ret;
+}
+
+char *strchr(const char *s, int c) {
+    while (*s) {
+        if (*s == (char)c)
+            return (char *)s;
+        s++;
+    }
+    return NULL;
+}
+
+void *memcpy(void *dest, const void *src, unsigned int n) {
+    char *d = (char *)dest;
+    const char *ss = (const char *)src;
+    for (unsigned int i = 0; i < n; i++)
+        d[i] = ss[i];
+    return dest;
 }

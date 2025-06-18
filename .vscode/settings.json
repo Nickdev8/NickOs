@@ -3,6 +3,7 @@
         "*.embeddedhtml": "html",
         "ascii_art.h": "c",
         "util.h": "c",
-        "vga.h": "c"
+        "vga.h": "c",
+        "stddef.h": "c"
     }
 }

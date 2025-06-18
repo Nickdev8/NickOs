@@ -2,6 +2,7 @@
 #include "input.h"
 #include "shell.h"
 #include "util.h"
+#include "fs.h"
 
 #define MAX_INPUT 256
 #define HISTORY_SIZE 10
@@ -124,6 +125,7 @@ void handle_keypress()
         execute_command(input_buffer);
         input_pos = 0;
         input_buffer[0] = '\0';
+        print(fs_pwd_name());
         print("> ");
         return;
     }

@@ -1,11 +1,13 @@
 #include "vga.h"
 #include "util.h"
 #include "input.h"
-#include "ascii_art.h"
+#include "ascii_art.h" 
+#include "fs.h"
 
 void kernel_main()
 {
     init_vga();
+    // fs_init();
 
     disable_cursor();
     clear_screen();

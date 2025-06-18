@@ -2,6 +2,8 @@
 #include "vga.h"
 #include "util.h"
 #include "ascii_art.h"
+#include "util.h"
+#include "fs.h"
 
 
 void cmd_help(const char *args) {
@@ -35,11 +37,88 @@ void cmd_theme(const char *args) {
     }
 }
 
+// list cwd
+void cmd_ls(const char *args) {
+    (void)args;
+    fs_list();
+}
+
+// mkdir <name>
+void cmd_mkdir(const char *args) {
+    if (!*args) {
+        print("Usage: mkdir <name>\n");
+        return;
+    }
+    if (fs_mkdir(args) == 0)
+        print("OK\n");
+    else
+        print("Error\n");
+}
+
+// cd <name|..>
+void cmd_cd(const char *args) {
+    if (!*args) {
+        print("Usage: cd <dir>\n");
+        return;
+    }
+    if (fs_chdir(args) != 0)
+        print("No such directory\n");
+}
+
+// cat <file>
+void cmd_cat(const char *args) {
+    if (!*args) {
+        print("Usage: cat <file>\n");
+        return;
+    }
+    fs_node_t *f = fs_open(args, 0);
+    if (!f || f->type != FS_FILE) {
+        print("No such file\n");
+        return;
+    }
+    char buf[128];
+    unsigned int n;
+    while ((n = fs_read(f, buf, sizeof(buf))) > 0) {
+        buf[n] = 0;
+        print(buf);
+    }
+        print("\n");
+}
+
+// write <file> <text>
+void cmd_write(const char *args) {
+    // split filename and text
+    const char *text = strchr(args, ' ');
+    if (!text) {
+        print("Usage: write <file> <text>\n");
+        return;
+    }
+    char name[FS_MAX_NAME];
+    unsigned int len = (unsigned int)(text - args);
+    if (len >= FS_MAX_NAME) len = FS_MAX_NAME-1;
+    memcpy(name, args, len);
+    name[len] = 0;
+    text++; // skip space
+    fs_node_t *f = fs_open(name, 1);
+    if (!f) {
+        print("Error opening file\n");
+        return;
+    }
+    fs_write(f, text, strlen(text));
+    print("OK\n");
+}
+
+
 Command commands[] = {
     { "help", cmd_help },
     { "clear", cmd_clear },
     { "about", cmd_about },
     { "theme", cmd_theme },
+    { "ls",    cmd_ls    },
+    { "mkdir", cmd_mkdir },
+    { "cd",    cmd_cd    },
+    { "cat",   cmd_cat   },
+    { "write", cmd_write },
 };
 
 int command_count = sizeof(commands) / sizeof(Command);

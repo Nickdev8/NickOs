@@ -1,6 +1,13 @@
-ISO_NAME = NickOS.iso
-KERNEL_ELF = build/kernel.elf
-OBJS = build/boot.o build/kernel.o build/vga.o build/input.o build/shell.o build/util.o build/ascii_art.o
+ISO_NAME     = NickOS.iso
+KERNEL_ELF   = build/kernel.elf
+OBJS         = build/boot.o \
+               build/kernel.o \
+               build/vga.o \
+               build/input.o \
+               build/shell.o \
+               build/util.o \
+               build/ascii_art.o \
+               build/fs.o
 
 all: $(ISO_NAME)
 
@@ -13,9 +20,9 @@ build/boot.o: src/boot.asm | build
 build/kernel.o: src/kernel.c | build
 	x86_64-elf-gcc -m32 -ffreestanding -O2 -Wall -Wextra -c $< -o $@
 
+# this also builds fs.o from src/fs.c
 build/%.o: src/%.c | build
 	x86_64-elf-gcc -m32 -ffreestanding -O2 -Wall -Wextra -c $< -o $@
-
 
 $(KERNEL_ELF): $(OBJS)
 	x86_64-elf-ld -m elf_i386 -T link.ld -o $@ $(OBJS)
@@ -30,8 +37,6 @@ $(ISO_NAME): $(KERNEL_ELF) iso/boot/grub/grub.cfg
 
 run: $(ISO_NAME)
 	qemu-system-x86_64 -cdrom NickOS.iso -display gtk -vga std
-
-
 
 clean:
 	rm -rf build iso $(ISO_NAME)
